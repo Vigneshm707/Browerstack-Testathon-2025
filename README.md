@@ -29,8 +29,8 @@ Before running the tests, set your BrowserStack credentials as environment varia
 
 -- On Windows (Command Prompt)
 
-set BROWSERSTACK_USERNAME = <your-username>
-set BROWSERSTACK_ACCESS_KEY = <your-access-key>
+set BROWSERSTACK_USERNAME=`<your-username>`
+set BROWSERSTACK_ACCESS_KEY =`<your-access-key>`
 
 -- On macOS / Linux (bash/zsh)
 
