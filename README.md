@@ -34,7 +34,7 @@ set BROWSERSTACK_ACCESS_KEY = <your-access-key>
 
 -- On macOS / Linux (bash/zsh)
 
-export BROWSERSTACK_USERNAME=<your-username>
+export BROWSERSTACK_USERNAME='<your-username>'
 export BROWSERSTACK_ACCESS_KEY=<your-access-key>
 
 
