@@ -23,4 +23,19 @@ Included an end-to-end automation framework using:
 
 All scripts are fully functional and reports are generated automatically.
 
+--Running the Automation Suite
+
+Before running the tests, set your BrowserStack credentials as environment variables.  
+
+-- On Windows (Command Prompt)
+
+set BROWSERSTACK_USERNAME=<your-username>
+set BROWSERSTACK_ACCESS_KEY=<your-access-key>
+
+-- On macOS / Linux (bash/zsh)
+
+export BROWSERSTACK_USERNAME=<your-username>
+export BROWSERSTACK_ACCESS_KEY=<your-access-key>
+
+
 Maintained by Vignesh Manikandan – Software QA Engineer
