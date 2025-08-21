@@ -1,0 +1,26 @@
+# Ignore build and IDE files
+/.classpath
+/.project
+/.settings/
+/bin/
+/target/
+
+# Ignore Eclipse specific files
+*.log
+
+# IntelliJ IDEA files (if ever used)
+*.iml
+.idea/
+
+# Maven Wrapper files
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# Reports and logs
+reports/
+logs/
+test-output/
+
+# OS-specific files
+.DS_Store
+Thumbs.db

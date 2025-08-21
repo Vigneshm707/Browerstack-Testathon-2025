@@ -1,0 +1,26 @@
+<suite name="BrowserStack Suite" parallel="tests" thread-count="3">
+    <test name="ChromeTest">
+        <parameter name="browser" value="chrome"/>
+        <parameter name="os" value="Windows"/>
+        <parameter name="osVersion" value="11"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.FirstTest"/>
+        </classes>
+    </test>
+    <test name="FirefoxTest">
+        <parameter name="browser" value="firefox"/>
+        <parameter name="os" value="Windows"/>
+        <parameter name="osVersion" value="11"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.FirstTest"/>
+        </classes>
+    </test>
+    <test name="EdgeTest">
+        <parameter name="browser" value="edge"/>
+        <parameter name="os" value="Windows"/>
+        <parameter name="osVersion" value="11"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.FirstTest"/>
+        </classes>
+    </test>
+</suite>
