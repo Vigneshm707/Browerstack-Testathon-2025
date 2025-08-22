@@ -41,6 +41,6 @@ public class FirstTest extends BaseTest {
             );
         }
 
-        logStep("Home Page Title Verified Successfully: " + actualTitle);
+        logStep("Home Page Title Verified Successfull: " + actualTitle);
     }
 }
