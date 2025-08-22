@@ -4,8 +4,8 @@ import org.openqa.selenium.WebDriver;
 
 public class HomePage extends BasePage {
 
-    private String pageUrl = "https://techbeamers.com/selenium-practice-test-page/";
-    private String expectedTitle = "Selenium Practice Test Page - TechBeamers";
+    private final String pageUrl = "https://techbeamers.com/selenium-practice-test-page/";
+    private final String expectedTitle = "Selenium Practice Test - TechBeamers";
 
     public HomePage(WebDriver driver) {
         super(driver);

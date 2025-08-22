@@ -36,11 +36,11 @@
 
         <!-- BrowserStack Java SDK -->
         <dependency>
-            <groupId>com.browserstack</groupId>
-            <artifactId>browserstack-java-sdk</artifactId>
-            <version>1.6.0</version>
-            <scope>compile</scope>
-        </dependency>
+    <groupId>com.browserstack</groupId>
+    <artifactId>browserstack-java-sdk</artifactId>
+    <version>1.39.0</version>
+</dependency>
+
 
         <!-- ExtentReports -->
         <dependency>

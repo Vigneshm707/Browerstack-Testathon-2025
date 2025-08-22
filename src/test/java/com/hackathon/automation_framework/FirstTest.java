@@ -4,7 +4,6 @@ import com.aventstack.extentreports.Status;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
-
 import java.time.Duration;
 
 public class FirstTest extends BaseTest {
@@ -13,23 +12,35 @@ public class FirstTest extends BaseTest {
     public void verifyHomePageTitle() {
         HomePage homePage = new HomePage(getDriver());
 
+        logStep("Opening Home Page");
         homePage.open();
 
-        // Wait until the page title contains expected text
-        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.titleContains(homePage.getExpectedTitle()));
-
-        String actualTitle = homePage.getPageTitle();
         String expectedTitle = homePage.getExpectedTitle();
+        String actualTitle = "";
 
-        // Manual check instead of Assert.assertEquals to prevent TestNG extra text
-        if (!actualTitle.equals(expectedTitle)) {
-            throw new AssertionError("Home Page Title Verification Failed. Expected: '" 
-                    + expectedTitle + "' but found: '" + actualTitle + "'");
+        try {
+            logStep("Waiting for Home Page title to be: " + expectedTitle);
+            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.titleContains(expectedTitle));
+            actualTitle = homePage.getPageTitle();
+            logStep("Retrieved actual page title: " + actualTitle);
+        } catch (Exception e) {
+            actualTitle = getDriver().getTitle();
+            logStep("Exception while verifying title. Current title: " + actualTitle);
+            throw new AssertionError(
+                    "Home Page Title Verification Failed.\nExpected: '" + expectedTitle +
+                            "'\nActual: '" + actualTitle + "'"
+            );
         }
 
-        // Log pass
-        testReport.get().log(Status.PASS, "Home Page Title Verified Successfully: " + actualTitle);
-        System.out.println("Home page title verified successfully: " + actualTitle);
+        if (!actualTitle.equals(expectedTitle)) {
+            logStep("Title mismatch! Expected: '" + expectedTitle + "', Actual: '" + actualTitle + "'");
+            throw new AssertionError(
+                    "Home Page Title Verification Failed.\nExpected: '" + expectedTitle +
+                            "'\nActual: '" + actualTitle + "'"
+            );
+        }
+
+        logStep("Home Page Title Verified Successfully: " + actualTitle);
     }
 }

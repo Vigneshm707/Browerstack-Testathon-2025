@@ -5,7 +5,6 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
-
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -17,23 +16,23 @@ import org.testng.annotations.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.time.Duration;
-import java.util.Base64;
 import java.util.HashMap;
 
 public class BaseTest {
+
     protected static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
     protected static ExtentReports extent;
     protected static ThreadLocal<ExtentTest> testReport = new ThreadLocal<>();
 
-    // Use environment variables instead of hardcoding credentials
-    private static final String USERNAME = System.getenv("BROWSERSTACK_USERNAME");
-    private static final String ACCESS_KEY = System.getenv("BROWSERSTACK_ACCESS_KEY");
+    // Environment variable fallback
+    private static final String USERNAME = System.getenv("BROWSERSTACK_USERNAME") != null ?
+            System.getenv("BROWSERSTACK_USERNAME") : "YOUR_USERNAME";
+    private static final String ACCESS_KEY = System.getenv("BROWSERSTACK_ACCESS_KEY") != null ?
+            System.getenv("BROWSERSTACK_ACCESS_KEY") : "YOUR_ACCESS_KEY";
     private static final String HUB_URL = "https://" + USERNAME + ":" + ACCESS_KEY + "@hub-cloud.browserstack.com/wd/hub";
     private static final String BUILD_NAME = "Hackathon_Build_1";
     private static String reportPath;
@@ -42,6 +41,7 @@ public class BaseTest {
         return driver.get();
     }
 
+    // ---------------------- Extent Report Setup ----------------------
     @BeforeSuite
     public void setUpExtentReport() {
         String reportName = "ExtentReport_" + System.currentTimeMillis() + ".html";
@@ -54,14 +54,19 @@ public class BaseTest {
 
         extent = new ExtentReports();
         extent.attachReporter(spark);
+
+        System.out.println("Extent Report initialized at: " + reportPath);
     }
 
+    // ---------------------- Test Setup ----------------------
     @Parameters({"browser", "os", "osVersion"})
     @BeforeMethod(alwaysRun = true)
-    public void setUp(@Optional("Chrome") String browser,
+    public void setUp(@Optional("chrome") String browser,
                       @Optional("Windows") String os,
                       @Optional("11") String osVersion,
                       Method method) throws Exception {
+
+        System.out.println("Starting test: " + method.getName() + " on browser: " + browser);
 
         DesiredCapabilities caps = new DesiredCapabilities();
         caps.setCapability("browserName", browser);
@@ -84,82 +89,81 @@ public class BaseTest {
         testReport.set(test);
     }
 
-    @AfterMethod(alwaysRun = true)
-    public void tearDown(ITestResult result) throws IOException, InterruptedException {
+    // ---------------------- Step Logging ----------------------
+    public void logStep(String message) {
+        System.out.println("STEP: " + message);
         ExtentTest test = testReport.get();
-        String methodName = result.getMethod().getMethodName();
-        String failureMessage = "";
-
-        if (result.getStatus() == ITestResult.FAILURE) {
-            failureMessage = result.getThrowable() != null ? result.getThrowable().getMessage() :
-                    "Test '" + methodName + "' failed";
-
-            test.log(Status.FAIL, failureMessage);
-            String screenshotPath = captureScreenshot(methodName);
-            test.addScreenCaptureFromPath(screenshotPath);
-
-        } else if (result.getStatus() == ITestResult.SUCCESS) {
-            test.log(Status.PASS, "Test passed successfully");
-            failureMessage = "Test passed";
-        } else {
-            test.log(Status.SKIP, "Test skipped");
-            failureMessage = "Test skipped";
+        if (test != null) {
+            test.log(Status.INFO, message);
         }
-
-        if (getDriver() != null) {
-            String sessionId = ((RemoteWebDriver) getDriver()).getSessionId().toString();
-            System.out.println("BrowserStack Session ID: " + sessionId);
-
-            try {
-                URL url = new URL("https://api.browserstack.com/automate/sessions/" + sessionId + ".json");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setDoOutput(true);
-                conn.setRequestMethod("PUT");
-                String auth = USERNAME + ":" + ACCESS_KEY;
-                String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-                conn.setRequestProperty("Authorization", "Basic " + encodedAuth);
-                conn.setRequestProperty("Content-Type", "application/json");
-
-                String status = (result.getStatus() == ITestResult.SUCCESS) ? "passed" : "failed";
-                String jsonBody = "{\"status\":\"" + status + "\",\"reason\":\"" + failureMessage + "\"}";
-                OutputStream os = conn.getOutputStream();
-                os.write(jsonBody.getBytes());
-                os.flush();
-                os.close();
-
-                int responseCode = conn.getResponseCode();
-                System.out.println("BrowserStack REST API response: " + responseCode);
-            } catch (Exception e) {
-                System.out.println("Failed to update BrowserStack via REST API: " + e.getMessage());
-            } finally {
-                getDriver().quit();
-                driver.remove();
-            }
-        }
-
-        Thread.sleep(2000);
     }
 
+    // ---------------------- Test Teardown ----------------------
+    @AfterMethod(alwaysRun = true)
+    public void tearDown(ITestResult result) {
+        ExtentTest test = testReport.get();
+        String methodName = result.getMethod().getMethodName();
+        String status = "passed";
+
+        try {
+            if (result.getStatus() == ITestResult.FAILURE) {
+                status = "failed";
+                String failureMessage = result.getThrowable() != null ?
+                        result.getThrowable().getMessage() : "Test failed";
+
+                System.out.println("TEST FAILED: " + methodName);
+                System.out.println("Reason: " + failureMessage);
+
+                if (test != null) test.log(Status.FAIL, failureMessage);
+
+                // Capture screenshot
+                if (getDriver() instanceof TakesScreenshot) {
+                    File screenshotsDir = new File("test-output/screenshots/");
+                    if (!screenshotsDir.exists()) screenshotsDir.mkdirs();
+
+                    File srcFile = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);
+                    File destFile = new File(screenshotsDir, methodName + "_" + System.currentTimeMillis() + ".png");
+                    Files.copy(srcFile.toPath(), destFile.toPath());
+
+                    if (test != null) test.addScreenCaptureFromPath("screenshots/" + destFile.getName());
+                    System.out.println("Screenshot saved: " + destFile.getAbsolutePath());
+                }
+
+            } else if (result.getStatus() == ITestResult.SKIP) {
+                status = "skipped";
+                System.out.println("TEST SKIPPED: " + methodName);
+                if (test != null) test.log(Status.SKIP, "Test skipped");
+            } else {
+                System.out.println("TEST PASSED: " + methodName);
+                if (test != null) test.log(Status.PASS, "Test passed successfully");
+            }
+
+            // Set BrowserStack session status
+            if (getDriver() instanceof RemoteWebDriver) {
+                ((RemoteWebDriver) getDriver()).executeScript(
+                        "browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\""
+                                + status + "\", \"reason\": \"" + methodName + "\"}}"
+                );
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error in tearDown: " + e.getMessage());
+        } finally {
+            if (getDriver() != null) getDriver().quit();
+            driver.remove();
+        }
+    }
+
+    // ---------------------- Extent Report Teardown ----------------------
     @AfterSuite
     public void tearDownExtentReport() {
         if (extent != null) extent.flush();
-
         try {
             File htmlFile = new File(reportPath);
             if (htmlFile.exists()) Desktop.getDesktop().browse(htmlFile.toURI());
+            System.out.println("Extent Report opened automatically.");
         } catch (Exception e) {
             System.out.println("Could not open report automatically: " + e.getMessage());
         }
-    }
-
-    public String captureScreenshot(String methodName) throws IOException {
-        File screenshotsDir = new File("test-output/screenshots/");
-        if (!screenshotsDir.exists()) screenshotsDir.mkdirs();
-
-        File srcFile = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);
-        String path = "test-output/screenshots/" + methodName + "_" + System.currentTimeMillis() + ".png";
-        File destFile = new File(path);
-        Files.copy(srcFile.toPath(), destFile.toPath());
-        return destFile.getAbsolutePath();
     }
 }
