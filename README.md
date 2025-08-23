@@ -9,7 +9,9 @@ Manual Test Cases:
 
 All manual test cases are documented here:  
 
-[Test Management URL]
+Test Management URL:
+
+https://test-management.browserstack.com/projects/2291126/folder/15081609/test-cases?public_token=5ca4fe287728b87269bb8250472518863b437da8f0a7d0793725fd88f01620a17cd8e18907558a16980604e8796b90b44e9e3d01b8c68fa7e5f66ae50377032d&public_token_id=6333
 
 Note: The link points to the root folder. From there, you can expand the respective subfolders to view the individual test cases. I’ve kept it as a single URL for simplicity.
 
