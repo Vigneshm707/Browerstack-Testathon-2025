@@ -45,4 +45,6 @@ Since the current automation suite does not have BrowserStack SDK integration, f
 
 Instead, you can view the results of the automated test runs using this public link
 
+https://automate.browserstack.com/projects/Hackathon+Project/builds/Hackathon_Build/29?tab=tests&testListView=flat&public_token=2963e5c31c6150afaa2d2e2907283298c18d6fbac2ede3ec350d17888a1d0a40
+
 Maintained by Vignesh Manikandan – Software QA Engineer
