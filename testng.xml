@@ -1,26 +1,63 @@
-<suite name="BrowserStack Suite" parallel="tests" thread-count="3">
-    <test name="ChromeTest">
+<suite name="HackathonSuite" parallel="tests">
+
+    <!-- Run Login tests in all browsers -->
+    <test name="LoginTests-Chrome">
         <parameter name="browser" value="chrome"/>
-        <parameter name="os" value="Windows"/>
-        <parameter name="osVersion" value="11"/>
         <classes>
-            <class name="com.hackathon.automation_framework.FirstTest"/>
+            <class name="com.hackathon.automation_framework.SignInTest"/>
         </classes>
     </test>
-    <test name="FirefoxTest">
-        <parameter name="browser" value="firefox"/>
-        <parameter name="os" value="Windows"/>
-        <parameter name="osVersion" value="11"/>
-        <classes>
-            <class name="com.hackathon.automation_framework.FirstTest"/>
-        </classes>
-    </test>
-    <test name="EdgeTest">
+    <test name="LoginTests-Edge">
         <parameter name="browser" value="edge"/>
-        <parameter name="os" value="Windows"/>
-        <parameter name="osVersion" value="11"/>
         <classes>
-            <class name="com.hackathon.automation_framework.FirstTest"/>
+            <class name="com.hackathon.automation_framework.SignInTest"/>
         </classes>
     </test>
+    <test name="LoginTests-Firefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.SignInTest"/>
+        </classes>
+    </test>
+
+    <!-- Run Product tests in all browsers -->
+    <test name="ProductTests-Chrome">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.ProductPageTest"/>
+        </classes>
+    </test>
+    <test name="ProductTests-Edge">
+        <parameter name="browser" value="edge"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.ProductPageTest"/>
+        </classes>
+    </test>
+    <test name="ProductTests-Firefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.ProductPageTest"/>
+        </classes>
+    </test>
+
+    <!-- Run Checkout tests in all browsers -->
+    <test name="CheckoutTests-Chrome">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.CheckoutTest"/>
+        </classes>
+    </test>
+    <test name="CheckoutTests-Edge">
+        <parameter name="browser" value="edge"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.CheckoutTest"/>
+        </classes>
+    </test>
+    <test name="CheckoutTests-Firefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.hackathon.automation_framework.CheckoutTest"/>
+        </classes>
+    </test>
+
 </suite>

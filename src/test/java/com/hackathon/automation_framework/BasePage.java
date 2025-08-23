@@ -1,53 +1,39 @@
 package com.hackathon.automation_framework;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.*;
-import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 
 public class BasePage {
     protected WebDriver driver;
-    protected WebDriverWait wait;
-    protected Actions actions;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        this.actions = new Actions(driver);
     }
 
+    // Click an element
     protected void click(By locator) {
-        wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
+        driver.findElement(locator).click();
     }
 
+    // Enter text
     protected void type(By locator, String text) {
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        element.clear();
-        element.sendKeys(text);
+        driver.findElement(locator).clear();
+        driver.findElement(locator).sendKeys(text);
     }
 
+    // Get text from element
     protected String getText(By locator) {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getText();
+        return driver.findElement(locator).getText();
     }
 
-    protected String getAttribute(By locator, String attribute) {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getAttribute(attribute);
-    }
-
+    // Check if element is displayed
     protected boolean isDisplayed(By locator) {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
-        } catch (TimeoutException e) {
+            return driver.findElement(locator).isDisplayed();
+        } catch (Exception e) {
             return false;
         }
     }
-
-    protected void scrollToElement(By locator) {
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
-    public String getPageTitle() {
-        return driver.getTitle();
-    }
+    
+    
 }

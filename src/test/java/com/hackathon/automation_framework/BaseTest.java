@@ -15,7 +15,6 @@ import org.testng.annotations.*;
 
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
@@ -28,7 +27,6 @@ public class BaseTest {
     protected static ExtentReports extent;
     protected static ThreadLocal<ExtentTest> testReport = new ThreadLocal<>();
 
-    // Environment variable fallback
     private static final String USERNAME = System.getenv("BROWSERSTACK_USERNAME") != null ?
             System.getenv("BROWSERSTACK_USERNAME") : "YOUR_USERNAME";
     private static final String ACCESS_KEY = System.getenv("BROWSERSTACK_ACCESS_KEY") != null ?
@@ -85,16 +83,23 @@ public class BaseTest {
         webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.set(webDriver);
 
+        // Initialize ExtentTest safely
         ExtentTest test = extent.createTest(method.getName() + " (" + browser + ")");
         testReport.set(test);
     }
 
     // ---------------------- Step Logging ----------------------
     public void logStep(String message) {
-        System.out.println("STEP: " + message);
-        ExtentTest test = testReport.get();
-        if (test != null) {
-            test.log(Status.INFO, message);
+        try {
+            System.out.println("STEP: " + message);
+            ExtentTest test = testReport.get();
+            if (test != null) {
+                test.log(Status.INFO, message);
+            } else {
+                System.out.println("WARNING: ExtentTest is null, step not logged in report.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error logging step: " + e.getMessage());
         }
     }
 
@@ -111,12 +116,8 @@ public class BaseTest {
                 String failureMessage = result.getThrowable() != null ?
                         result.getThrowable().getMessage() : "Test failed";
 
-                System.out.println("TEST FAILED: " + methodName);
-                System.out.println("Reason: " + failureMessage);
-
                 if (test != null) test.log(Status.FAIL, failureMessage);
 
-                // Capture screenshot
                 if (getDriver() instanceof TakesScreenshot) {
                     File screenshotsDir = new File("test-output/screenshots/");
                     if (!screenshotsDir.exists()) screenshotsDir.mkdirs();
@@ -126,15 +127,12 @@ public class BaseTest {
                     Files.copy(srcFile.toPath(), destFile.toPath());
 
                     if (test != null) test.addScreenCaptureFromPath("screenshots/" + destFile.getName());
-                    System.out.println("Screenshot saved: " + destFile.getAbsolutePath());
                 }
 
             } else if (result.getStatus() == ITestResult.SKIP) {
                 status = "skipped";
-                System.out.println("TEST SKIPPED: " + methodName);
                 if (test != null) test.log(Status.SKIP, "Test skipped");
             } else {
-                System.out.println("TEST PASSED: " + methodName);
                 if (test != null) test.log(Status.PASS, "Test passed successfully");
             }
 
@@ -161,7 +159,6 @@ public class BaseTest {
         try {
             File htmlFile = new File(reportPath);
             if (htmlFile.exists()) Desktop.getDesktop().browse(htmlFile.toURI());
-            System.out.println("Extent Report opened automatically.");
         } catch (Exception e) {
             System.out.println("Could not open report automatically: " + e.getMessage());
         }
