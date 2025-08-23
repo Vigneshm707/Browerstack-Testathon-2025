@@ -37,4 +37,10 @@ set BROWSERSTACK_ACCESS_KEY =`<your-access-key>`
 export BROWSERSTACK_USERNAME=`<your-username>`
 export BROWSERSTACK_ACCESS_KEY=`<your-access-key>`
 
+-- Test Management / Observability
+
+Since the current automation suite does not have BrowserStack SDK integration, full Test Management and Observability dashboards are not available.
+
+Instead, you can view the results of the automated test runs using this public link
+
 Maintained by Vignesh Manikandan – Software QA Engineer
